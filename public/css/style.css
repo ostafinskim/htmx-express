@@ -1,0 +1,42 @@
+body {
+    padding: 20px;
+}
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+tr.htmx-swapping td {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+td,
+th {
+    border: 1px solid #383737;
+    text-align: left;
+    padding: 8px;
+}
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+.htmx-indicator{
+    opacity:0;
+    transition: opacity 500ms ease-in;
+}
+.htmx-request .htmx-indicator{
+    opacity:1
+}
+.htmx-request.htmx-indicator{
+    opacity:1
+}
+
+.my-indicator{
+    display:none;
+}
+.htmx-request .my-indicator{
+    display:inline;
+}
+.htmx-request.my-indicator{
+    display:inline;
+}
