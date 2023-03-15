@@ -6,21 +6,23 @@ html(lang='en')
    link(rel='stylesheet', href='/css/style.css')
    script(src='https://unpkg.com/htmx.org@1.5.0')
    script(src='https://unpkg.com/hyperscript.org@0.9.8')
+   script(src="/js/main.js")
 body
-   div
-    h1(hx-indicator="#spinner") Book Recommendations
-    img(id="spinner" class="htmx-indicator" src="/assets/spinner.svg")
-   form(
-        _="on submit log #form.reset()"
-        hx-post="/submit" 
-        hx-swap="beforeend"
-        hx-target="#new-book"
-        id="form"
-        class="mb-3"
-        )
-     input(type="text" placeholder="Book Title" name="title" class="form-control mb-3")
-     input(type="text" placeholder="Book Author" name="author" class="form-control mb-3")
-     button(type="submit" class="btn btn-primary") Submit
+   div(id="modals-here")
+    div(id="modal" class="modal fade show" tabindex="-1" style="display: none")
+   h1 Book Recommendations
+   form( _="on submit reset() the #form" hx-post="/submit"  hx-swap="beforeend" hx-target="#new-book" id="form" class="mb-3")
+    div( class="field-group")
+        label(for="title") Title
+        input(type="text" placeholder="Book Title" id="title" name="title" class="form-control mb-3")
+    div(class="field-group")
+        label(for="author") Author
+        input(type="text" placeholder="Book Author" id="author" name="author" class="form-control mb-3")
+    div(class="field-group")
+        label(for="description") Description
+        textarea(cols="50" rows="2" placeholder="Book description" id="description" name="description" class="form-control mb-3")
+    button(type="submit" class="btn btn-info") Submit
+    img(class="htmx-indicator spinner" src="assets/spinner.svg") 
    table
      thead
        tr
@@ -32,6 +34,15 @@ body
            td #{book.title}
            td #{book.author}
            td
-             button(class="btn btn-primary" hx-get=`/get-edit-form/${book.id}`) Edit Book
+            button(
+             class="btn btn-warning"
+             hx-get=`/get-book-details/${book.id}`
+             hx-target="#modal"
+             hx-trigger="click"
+             hx-swap="outerHTML swap:0.5s"
+             _="on htmx:afterOnLoad wait 1ms then add .show to #modal then add .show to #modal-backdrop"
+            ) View more
            td
-             button(hx-delete=`/delete/${book.id}` class="btn btn-primary") Delete
+             button(class="btn btn-success" hx-get=`/get-edit-form/${book.id}`) Edit Book
+           td
+             button(class="btn btn-danger" hx-delete=`/delete/${book.id}`) Delete

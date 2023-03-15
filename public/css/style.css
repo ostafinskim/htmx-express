@@ -22,7 +22,7 @@ tr:nth-child(even) {
 
 .htmx-indicator{
     opacity:0;
-    transition: opacity 500ms ease-in;
+    transition: opacity 3s ease-in;
 }
 .htmx-request .htmx-indicator{
     opacity:1
@@ -31,12 +31,16 @@ tr:nth-child(even) {
     opacity:1
 }
 
-.my-indicator{
+.spinner{
     display:none;
 }
-.htmx-request .my-indicator{
-    display:inline;
+.htmx-request .spinner{
+    margin-left: 1rem;
+    display: inline-block;
+    width: fit-content;
 }
-.htmx-request.my-indicator{
-    display:inline;
+.htmx-request.spinner{
+    margin-left: 1rem;
+    display: inline-block;
+    width: fit-content;
 }

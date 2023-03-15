@@ -6,22 +6,34 @@ const getAllBooks = async (req, res) => {
 };
 
 const addBook = async (req, res) => {
-    const { title, author } = req.body;
-    const book = { title, author };
+    const { title, author, description } = req.body;
+    if (!title || !author) {
+        return res.send(`
+            <p>Please provide title and author!</p>
+        `)
+    }
+
+    const book = { title, author, description };
 
     Book.create(book).then((x) => {
         return res.send(`<tr>
         <td>${book.title}</td>
         <td>${book.author}</td>
         <td>
-            <button class="btn btn-primary"
-                hx-get="/get-edit-form/${x.null}">
+        <button class="btn btn-warning"
+            hx-get="/get-book-details/${x._id}">
+            View more
+        </button>
+        </td>
+        <td>
+            <button class="btn btn-success"
+                hx-get="/get-edit-form/${x._id}">
                 Edit Book
             </button>
         </td>
         <td>
             <button hx-delete="/delete/${x.null}}"
-                class="btn btn-primary">
+                class="btn btn-danger">
                 Delete
             </button>
         </td>
@@ -29,9 +41,12 @@ const addBook = async (req, res) => {
     });
 };
 
-const deleteBook = (req, res) => {
+const deleteBook = async (req, res) => {
     const { id } = req.params;
-    Book.deleteOne({ _id: id });
+
+    if (!id) return res.send('');
+
+    await Book.deleteOne({ _id: id });
     return res.send('');
 };
 
@@ -42,14 +57,14 @@ const getSingleBook = async (req, res) => {
         <td>${title}</td>
         <td>${author}</td>
         <td>
-            <button class="btn btn-primary"
+            <button class="btn btn-success"
                 hx-get="/get-edit-form/${id}">
                 Edit Book
             </button>
         </td>
         <td>
             <button hx-delete="/delete/${id}"
-                class="btn btn-primary">
+                class="btn btn-danger">
                 Delete
             </button>
         </td>
@@ -65,10 +80,10 @@ const getSingleBookEditForm = async (req, res) => {
         <td><input name="title" value="${title}"/></td>
         <td><input name="author" value="${author}"/></td>
         <td>
-          <button class="btn btn-primary" hx-get="/get-book-row/${id}">
+          <button class="btn btn-warning" hx-get="/get-book-row/${id}">
             Cancel
           </button>
-          <button class="btn btn-primary" hx-put="/update/${id}" hx-include="closest tr">
+          <button class="btn btn-sucess" hx-put="/update/${id}" hx-include="closest tr">
             Save
           </button>
         </td>
@@ -89,14 +104,14 @@ const updateBook = async (req, res) => {
   <td>${updated.title}</td>
   <td>${updated.author}</td>
   <td>
-      <button class="btn btn-primary"
+      <button class="btn btn-success"
           hx-get="/get-edit-form/${id}">
           Edit Book
       </button>
   </td>
   <td>
       <button hx-delete="/delete/${id}"
-          class="btn btn-primary">
+          class="btn btn-danger">
           Delete
       </button>
   </td>
@@ -104,18 +119,36 @@ const updateBook = async (req, res) => {
 `);
 };
 
-const handleProgressBar = async (req, res) => {
-    res.send(`
-    <div hx-target="this"
-        hx-get="/job" 
-        hx-trigger="load delay:600ms" 
-        hx-swap="outerHTML">
-        <div class="progress">
-          <div id="pb" class="progress-bar" style="width:0%"></div>
-        </div>
-    </div>`
-    );
-};
+const getBookDetails = async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) return;
+
+    Book.find({ _id: id }).then(([{ _id: id, title, author, description }]) => {
+        return res.send(`
+        <div id="modal-backdrop" class="modal-backdrop fade show" style="display:block;"></div>
+        <div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">${title}</h5>
+                  <h6 class="modal-title">${id}</h6>
+                </div>
+                <div class="modal-body">
+                  <p>Author: <span>${author}</span></p>
+                  <p>Description: <span>${description ? description : "It's empty at the moment..."}</span></p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `);
+    });
+}
+
+
 
 module.exports = {
     getAllBooks,
@@ -124,5 +157,5 @@ module.exports = {
     getSingleBook,
     getSingleBookEditForm,
     updateBook,
-    handleProgressBar,
+    getBookDetails
 };
