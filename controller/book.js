@@ -2,7 +2,10 @@ const Book = require('../model/Book');
 
 const getAllBooks = async (req, res) => {
     const books = await Book.find({});
-    return res.render('index', { books: books });
+    const items = books.map(book => {
+        return { id: book._id, title: book.title, author: book.author, description: book.description }
+    })
+    return res.render('index', { books: items });
 };
 
 const addBook = async (req, res) => {

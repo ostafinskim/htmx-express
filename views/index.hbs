@@ -1,0 +1,87 @@
+<div id='modals-here'>
+    <div
+        id='modal'
+        class='modal fade show'
+        tabindex='-1'
+        style='display: none'
+    ></div>
+</div>
+<h1>Book Recommendations</h1>
+<form
+    _='on submit reset() the #form'
+    hx-post='/submit'
+    hx-swap='beforeend'
+    hx-target='#new-book'
+    id='form'
+>
+    <div>
+        <label for='title'>Title</label>
+        <input
+            type='text'
+            placeholder='Book Title'
+            id='title'
+            name='title'
+            class='form-control mb-3'
+        />
+    </div>
+    <div>
+        <label for='author'>Author</label>
+        <input
+            type='text'
+            placeholder='Book Author'
+            id='author'
+            name='author'
+            class='form-control mb-3'
+        />
+    </div>
+    <div>
+        <label for='description'>Description</label>
+        <textarea
+            cols='50'
+            rows='2'
+            placeholder='Book description'
+            id='description'
+            name='description'
+            class='form-control mb-3'
+        ></textarea>
+    </div>
+    <button type='submit' class='btn btn-info'>Submit</button>
+    <img class='htmx-indicator spinner' src='assets/spinner.svg' />
+</form>
+<table>
+    <thead>
+        <tr>
+            <th>Book Title</th>
+            <th>Book Author</th>
+        </tr>
+    </thead>
+    <tbody id='new-book' hx-target='closest tr' hx-swap='outerHTML swap:0.5s'>
+        {{#each books}}
+            <tr>
+                <td>{{title}}</td>
+                <td>{{author}}</td>
+                <td>
+                    <button
+                        class='btn btn-warning'
+                        hx-get='/get-book-details/{{id}}'
+                        hx-target='#modal'
+                        hx-trigger='click'
+                        hx-swap='outerHTML swap:0.5s'
+                        _='on htmx:afterOnLoad wait 1ms then add .show to #modal then add .show to #modal-backdrop'
+                    >View more
+                    </button>
+                    <button
+                        class='btn btn-success'
+                        hx-get='/get-edit-form/{{id}}'
+                        >Edit Book
+                    </button>
+                    <button
+                        class='btn btn-danger'
+                        hx-delete='/get-edit-form/{{id}}'
+                        >Delete
+                    </button>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
