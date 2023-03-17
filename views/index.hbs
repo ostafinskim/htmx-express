@@ -1,87 +1,168 @@
-<div id='modals-here'>
-    <div
-        id='modal'
-        class='modal fade show'
-        tabindex='-1'
-        style='display: none'
-    ></div>
+<div id="modal" class="relative z-10 ease-out duration-300" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    
+  <!--
+    Background backdrop, show/hide based on modal state.
+
+    Entering: "ease-out duration-300"
+      From: "opacity-0"
+      To: "opacity-100"
+    Leaving: "ease-in duration-200"
+      From: "opacity-100"
+      To: "opacity-0"
+  -->
+  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 ease-in duration-200 transition-opacity"></div>
+
+  <div class="fixed inset-0 z-10 overflow-y-auto">
+    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+      <!--
+        Modal panel, show/hide based on modal state.
+
+        Entering: "ease-out duration-300"
+          From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          To: "opacity-100 translate-y-0 sm:scale-100"
+        Leaving: "ease-in duration-200"
+          From: "opacity-100 translate-y-0 sm:scale-100"
+          To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+      -->
+      <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="my-5 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <button class="absolute right-10 bg-red-500 rounded-lg p-2" onclick="closeModal()">
+                X
+                    <img id="spinner" class='htmx-indicator spinner' src='assets/spinner.svg' />
+                </button>
+
+              <div class="mt-8" id="#content">
+                <h2 class="mt-4 text-base font-semibold leading-6 text-gray-900" id="modal-title">Book id:</h2>
+                <h3 class="mt-4 text-base font-semibold leading-6 text-gray-900" id="modal-title">Book author:</h3>
+                <h4 class="mt-4 text-base font-semibold leading-6 text-gray-900">Book title:</h4>
+              <p class="mt-4 text-sm text-gray-500">Desc</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<h1>Book Recommendations</h1>
-<form
-    _='on submit reset() the #form'
-    hx-post='/submit'
-    hx-swap='beforeend'
-    hx-target='#new-book'
-    id='form'
->
-    <div>
-        <label for='title'>Title</label>
+<div class="flex flex-col lg:flex-row p-6">
+  <div class="p-8 shadow-xl bg-white rounded-lg shadow-form w-full max-w-[550px]">
+    <form
+        {{!-- _='on htmx:afterRequest reset() me' --}}
+        hx-post='/submit'
+        hx-swap='beforeend swap: 0.5s'
+        hx-target='#new-book'
+        id='form'
+        method="POST"
+    >
+      <div class="mb-5" id="title_field" hx-target="div#title_field" hx-swap="outerHTML swap: 0.5s">
+        <label
+          for="title"
+          class="font-bold mb-3 block text-base  text-[#07074D]"
+        >
+          Book title
+        </label>
         <input
-            type='text'
-            placeholder='Book Title'
-            id='title'
-            name='title'
-            class='form-control mb-3'
+          type="text"
+          name="title"
+          id="title"
+          hx-post="/submit/title"
+          placeholder="Book title"
+          class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
         />
-    </div>
-    <div>
-        <label for='author'>Author</label>
+      </div>
+      <div class="mb-5" id="author_field" hx-target="div#author_field" hx-swap="outerHTML swap: 0.5s">
+        <label
+          for="author"
+          class="font-bold mb-3 block text-base  text-[#07074D]"
+        >
+          Book author
+        </label>
         <input
-            type='text'
-            placeholder='Book Author'
-            id='author'
-            name='author'
-            class='form-control mb-3'
+          type="text"
+          name="author"
+          id="author"
+          placeholder="Book author"
+          hx-post="/submit/author"
+          class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
         />
-    </div>
-    <div>
-        <label for='description'>Description</label>
+      </div>
+      <div class="mb-5">
+        <label
+          for="desc"
+          class="font-bold mb-3 block text-base text-[#07074D]"
+        >
+          Book description
+        </label>
         <textarea
-            cols='50'
-            rows='2'
-            placeholder='Book description'
-            id='description'
-            name='description'
-            class='form-control mb-3'
+          rows="4"
+          name="desc"
+          id="desc"
+          placeholder="Book description..."
+          value=""
+          class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
         ></textarea>
-    </div>
-    <button type='submit' class='btn btn-info'>Submit</button>
-    <img class='htmx-indicator spinner' src='assets/spinner.svg' />
-</form>
-<table>
-    <thead>
-        <tr>
-            <th>Book Title</th>
-            <th>Book Author</th>
-        </tr>
-    </thead>
-    <tbody id='new-book' hx-target='closest tr' hx-swap='outerHTML swap:0.5s'>
-        {{#each books}}
+      </div>
+      <div>
+        <button
+          class="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none"
+        >
+          Submit
+        </button>
+        <img class='htmx-indicator spinner' src='assets/spinner.svg' />
+      </div>
+    </form>
+  </div>
+  <!-- component -->
+  <div class="w-full">
+    <div class=" py-2 inline-block min-w-full sm:px-6 lg:px-8">
+      <div class="overflow-hidden shadow-2xl">
+        <table class="min-w-full">
+          <thead class="bg-gray-200 border-b">
             <tr>
-                <td>{{title}}</td>
-                <td>{{author}}</td>
-                <td>
-                    <button
-                        class='btn btn-warning'
-                        hx-get='/get-book-details/{{id}}'
+              <th scope="col" class="text-sm font-bold text-gray-900 px-6 py-4 text-left">
+                Book title
+              </th>
+              <th scope="col" class="text-sm font-bold text-gray-900 px-6 py-4 text-left">
+                Book author
+              </th>
+              <th scope="col" class="text-sm font-bold text-gray-900 px-6 py-4 text-left">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody id='new-book' hx-target='closest tr' hx-swap='outerHTML swap: 0.5s'>
+            {{#each books}}
+            <tr class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100">
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">{{ title }}</td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">{{ author }}</td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                 <button
+                        class="border border-indigo-500 bg-indigo-500 text-white rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-indigo-600 focus:outline-none focus:shadow-outline"
+                        hx-post='/modal/{{id}}'
                         hx-target='#modal'
-                        hx-trigger='click'
-                        hx-swap='outerHTML swap:0.5s'
-                        _='on htmx:afterOnLoad wait 1ms then add .show to #modal then add .show to #modal-backdrop'
+                        hx-indicator="#spinner"
+                        hx-swap='outerHTML swap: 0.5s'
+                        _='on click add .active to #modal'
                     >View more
                     </button>
                     <button
-                        class='btn btn-success'
+                        class='border border-teal-500 bg-teal-500 text-white rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-teal-600 focus:outline-none focus:shadow-outline'
                         hx-get='/get-edit-form/{{id}}'
                         >Edit Book
                     </button>
                     <button
-                        class='btn btn-danger'
-                        hx-delete='/get-edit-form/{{id}}'
+                        class='border border-red-500 bg-red-500 text-white rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-red-600 focus:outline-none focus:shadow-outline'
+                        hx-delete='/delete/{{id}}'
                         >Delete
                     </button>
-                </td>
+              </td>
             </tr>
-        {{/each}}
-    </tbody>
-</table>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
